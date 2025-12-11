@@ -331,6 +331,10 @@
           <input id="delaiAcceptation" type="text" placeholder="Ex : ~2 mois après soumission" />
         </div>
         <div>
+          <label for="frais">Frais d’inscription</label>
+          <input id="frais" type="text" placeholder="Ex : 800 € (early), 1000 €" />
+        </div>
+        <div>
           <label for="datesEvent">Dates de l’événement / publication</label>
           <input id="datesEvent" type="text" placeholder="Ex : 13–19 juin 2027" />
         </div>
@@ -380,6 +384,7 @@
               <th>Survey ?</th>
               <th>Deadline</th>
               <th>Délai d’acceptation</th>
+              <th>Frais</th>
               <th>Dates</th>
               <th>Ville / Pays</th>
               <th>Articles similaires publiés</th>
@@ -428,13 +433,14 @@
     const surveyFriendlyEl = document.getElementById("surveyFriendly");
     const deadlineEl = document.getElementById("deadline");
     const delaiAcceptationEl = document.getElementById("delaiAcceptation");
+    const fraisEl = document.getElementById("frais");
     const datesEventEl = document.getElementById("datesEvent");
     const villePaysEl = document.getElementById("villePays");
     const articlesSimilairesEl = document.getElementById("articlesSimilaires");
     const commentairesEl = document.getElementById("commentaires");
 
     const saveBtn = document.getElementById("saveBtn");
-       const resetBtn = document.getElementById("resetBtn");
+    const resetBtn = document.getElementById("resetBtn");
     const clearBtn = document.getElementById("clearBtn");
     const exportBtn = document.getElementById("exportBtn");
     const exportCsvBtn = document.getElementById("exportCsvBtn");
@@ -506,6 +512,7 @@
 
         tr.appendChild(tdCell(row.deadline || ""));
         tr.appendChild(tdCell(row.delaiAcceptation || ""));
+        tr.appendChild(tdCell(row.frais || ""));
         tr.appendChild(tdCell(row.datesEvent || ""));
         tr.appendChild(tdCell(row.villePays || ""));
         tr.appendChild(tdCell(row.articlesSimilaires || "", "cell-multiline"));
@@ -566,6 +573,7 @@
       surveyFriendlyEl.value = "";
       deadlineEl.value = "";
       delaiAcceptationEl.value = "";
+      fraisEl.value = "";
       datesEventEl.value = "";
       villePaysEl.value = "";
       articlesSimilairesEl.value = "";
@@ -585,6 +593,7 @@
       surveyFriendlyEl.value = row.surveyFriendly || "";
       deadlineEl.value = row.deadline || "";
       delaiAcceptationEl.value = row.delaiAcceptation || "";
+      fraisEl.value = row.frais || "";
       datesEventEl.value = row.datesEvent || "";
       villePaysEl.value = row.villePays || "";
       articlesSimilairesEl.value = row.articlesSimilaires || "";
@@ -605,6 +614,7 @@
         surveyFriendly: surveyFriendlyEl.value,
         deadline: deadlineEl.value.trim(),
         delaiAcceptation: delaiAcceptationEl.value.trim(),
+        frais: fraisEl.value.trim(),
         datesEvent: datesEventEl.value.trim(),
         villePays: villePaysEl.value.trim(),
         articlesSimilaires: articlesSimilairesEl.value.trim(),
@@ -659,6 +669,7 @@
         "Compatible Survey",
         "Date limite",
         "Délai d’acceptation",
+        "Frais",
         "Dates",
         "Ville / Pays",
         "Articles similaires publiés",
@@ -675,6 +686,7 @@
         row.surveyFriendly || "",
         row.deadline || "",
         row.delaiAcceptation || "",
+        row.frais || "",
         row.datesEvent || "",
         row.villePays || "",
         (row.articlesSimilaires || "").replace(/\r?\n/g, " "),

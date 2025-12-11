@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tableau des conférences - Survey Provenance ML</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ---------- Global styles ---------- */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f7;
+      color: #222;
+    }
+
+    header {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 0.4rem 0 0;
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    main {
+      padding: 1.5rem 2rem 2rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    /* ---------- Form styles ---------- */
+    .card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+      display: block;
+      color: #374151;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      font-size: 0.9rem;
+      border-radius: 0.6rem;
+      border: 1px solid #d1d5db;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background: #f9fafb;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px #6366f1;
+      background: white;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 48px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background-color 0.15s, box-shadow 0.15s, transform 0.05s;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .btn-primary {
+      background: #4f46e5;
+      color: white;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-primary:hover {
+      background: #4338ca;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #eef2ff;
+      color: #3730a3;
+      margin-left: 0.4rem;
+    }
+
+    .status {
+      font-size: 0.8rem;
+      color: #4b5563;
+    }
+
+    /* ---------- Table styles ---------- */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 1rem;
+      background: white;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.12);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+      font-size: 0.85rem;
+    }
+
+    thead {
+      background: #f3f4f6;
+    }
+
+    th,
+    td {
+      padding: 0.55rem 0.7rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 700;
+      white-space: nowrap;
+      font-size: 0.8rem;
+      color: #374151;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    a.link {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    a.link:hover {
+      text-decoration: underline;
+    }
+
+    .cell-small {
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cell-multiline {
+      max-width: 260px;
+      white-space: normal;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- Utility ---------- */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar .status {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+    }
+
+    .pill-yes {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pill-no {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem 1.25rem;
+      }
+      main {
+        padding: 1rem 1.25rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Tableau des conférences et revues — Survey Provenance ML</h1>
+    <p>Ajoute, modifie et consulte les venues potentielles pour ton article de synthèse.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Nouvelle entrée / Modifier une entrée</h2>
+      <p class="status">
+        Utilise ce formulaire pour ajouter une conférence, une revue ou un atelier. Pour modifier une ligne,
+        clique sur <strong>“Éditer”</strong> dans le tableau, les champs seront remplis automatiquement.
+      </p>
+
+      <div class="form-grid">
+        <div>
+          <label for="nomCourt">Nom court</label>
+          <input id="nomCourt" type="text" placeholder="Ex : SIGMOD, VLDB, TKDE" />
+        </div>
+        <div>
+          <label for="lien">Lien</label>
+          <input id="lien" type="url" placeholder="https://..." />
+        </div>
+        <div>
+          <label for="nomComplet">Nom complet</label>
+          <input id="nomComplet" type="text" placeholder="Nom complet de la conférence ou revue" />
+        </div>
+        <div>
+          <label for="type">Type</label>
+          <select id="type">
+            <option value="">-- Sélectionner --</option>
+            <option value="Revue">Revue</option>
+            <option value="Conférence">Conférence</option>
+            <option value="Atelier">Atelier</option>
+          </select>
+        </div>
+        <div>
+          <label for="classement">Classement (CORE / Qualis)</label>
+          <input id="classement" type="text" placeholder="Ex : CORE A*, CORE A, Qualis A1..." />
+        </div>
+        <div>
+          <label for="thematique">Thématique / Pertinence</label>
+          <input id="thematique" type="text" placeholder="Ex : Data management, ML, provenance..." />
+        </div>
+        <div>
+          <label for="surveyFriendly">Compatible avec les articles de synthèse ?</label>
+          <select id="surveyFriendly">
+            <option value="">-- Inconnu --</option>
+            <option value="Oui">Oui</option>
+            <option value="Non">Non</option>
+            <option value="Conditionnel">Conditionnel</option>
+          </select>
+        </div>
+        <div>
+          <label for="deadline">Date limite de soumission</label>
+          <input id="deadline" type="text" placeholder="Ex : 15 janvier 2026" />
+        </div>
+        <div>
+          <label for="datesEvent">Dates de l’événement / publication</label>
+          <input id="datesEvent" type="text" placeholder="Ex : 13–19 juin 2027" />
+        </div>
+        <div>
+          <label for="villePays">Ville / Pays</label>
+          <input id="villePays" type="text" placeholder="Ex : Huntington Beach, USA" />
+        </div>
+        <div>
+          <label for="articlesSimilaires">Articles similaires publiés</label>
+          <textarea id="articlesSimilaires" placeholder="Titres ou références d’articles proches (optionnel)"></textarea>
+        </div>
+        <div>
+          <label for="commentaires">Commentaires / Notes</label>
+          <textarea id="commentaires" placeholder="Ex : Très compétitif, bon pour surveys, etc."></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="resetBtn" type="button" class="btn-secondary">Réinitialiser le formulaire</button>
+        <button id="saveBtn" type="button" class="btn-primary">Enregistrer l’entrée</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <div class="status">
+          <strong>Tableau des venues</strong>
+          <span class="badge" id="countBadge">0 entrée</span>
+        </div>
+        <div class="actions">
+          <button id="exportBtn" type="button" class="btn-secondary">Exporter en JSON</button>
+          <button id="exportCsvBtn" type="button" class="btn-secondary">Exporter en CSV</button>
+          <button id="clearBtn" type="button" class="btn-danger">Effacer toutes les données</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="venuesTable">
+          <thead>
+            <tr>
+              <th>Nom court</th>
+              <th>Nom complet</th>
+              <th>Lien</th>
+              <th>Type</th>
+              <th>Classement</th>
+              <th>Thématique / Pertinence</th>
+              <th>Survey ?</th>
+              <th>Deadline</th>
+              <th>Dates</th>
+              <th>Ville / Pays</th>
+              <th>Articles similaires publiés</th>
+              <th>Commentaires / Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Rows will be inserted here by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // -----------------------------
+    // Data management (localStorage)
+    // -----------------------------
+    const STORAGE_KEY = "venues_survey_provenance_ml";
+
+    function loadData() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        console.error("Erreur de parsing JSON:", e);
+        return [];
+      }
+    }
+
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // -----------------------------
+    // DOM references
+    // -----------------------------
+    const nomCourtEl = document.getElementById("nomCourt");
+    const lienEl = document.getElementById("lien");
+    const nomCompletEl = document.getElementById("nomComplet");
+    const typeEl = document.getElementById("type");
+    const classementEl = document.getElementById("classement");
+    const thematiqueEl = document.getElementById("thematique");
+    const surveyFriendlyEl = document.getElementById("surveyFriendly");
+    const deadlineEl = document.getElementById("deadline");
+    const datesEventEl = document.getElementById("datesEvent");
+    const villePaysEl = document.getElementById("villePays");
+    const articlesSimilairesEl = document.getElementById("articlesSimilaires");
+    const commentairesEl = document.getElementById("commentaires");
+
+    const saveBtn = document.getElementById("saveBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+    const venuesTableBody = document.querySelector("#venuesTable tbody");
+    const countBadge = document.getElementById("countBadge");
+
+    let data = loadData();
+    let editIndex = null; // null = ajout, sinon index à modifier
+
+    // -----------------------------
+    // Rendering
+    // -----------------------------
+    function pluralize(count, singular, plural) {
+      return count <= 1 ? singular : plural;
+    }
+
+    function renderTable() {
+      venuesTableBody.innerHTML = "";
+      data.forEach((row, index) => {
+        const tr = document.createElement("tr");
+
+        function tdCell(text, extraClass = "") {
+          const td = document.createElement("td");
+          td.textContent = text || "";
+          if (extraClass) td.classList.add(extraClass);
+          return td;
+        }
+
+        tr.appendChild(tdCell(row.nomCourt || "", "cell-small"));
+        tr.appendChild(tdCell(row.nomComplet || "", "cell-small"));
+
+        // Lien
+        const tdLien = document.createElement("td");
+        tdLien.classList.add("cell-small");
+        if (row.lien) {
+          const a = document.createElement("a");
+          a.href = row.lien;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = "Ouvrir";
+          a.classList.add("link");
+          tdLien.appendChild(a);
+        } else {
+          tdLien.textContent = "";
+        }
+        tr.appendChild(tdLien);
+
+        tr.appendChild(tdCell(row.type || ""));
+        tr.appendChild(tdCell(row.classement || ""));
+        tr.appendChild(tdCell(row.thematique || "", "cell-small"));
+
+        // Survey-friendly pill
+        const tdSurvey = document.createElement("td");
+        if (row.surveyFriendly) {
+          const pill = document.createElement("span");
+          pill.classList.add("pill");
+          if (row.surveyFriendly === "Oui") {
+            pill.classList.add("pill-yes");
+          } else if (row.surveyFriendly === "Non") {
+            pill.classList.add("pill-no");
+          } else {
+            pill.style.background = "#fef9c3";
+            pill.style.color = "#92400e";
+          }
+          pill.textContent = row.surveyFriendly;
+          tdSurvey.appendChild(pill);
+        }
+        tr.appendChild(tdSurvey);
+
+        tr.appendChild(tdCell(row.deadline || ""));
+        tr.appendChild(tdCell(row.datesEvent || ""));
+        tr.appendChild(tdCell(row.villePays || ""));
+        tr.appendChild(tdCell(row.articlesSimilaires || "", "cell-multiline"));
+        tr.appendChild(tdCell(row.commentaires || "", "cell-multiline"));
+
+        // Actions
+        const tdActions = document.createElement("td");
+        const actionsDiv = document.createElement("div");
+        actionsDiv.classList.add("table-actions");
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.textContent = "Éditer";
+        editBtn.classList.add("btn-secondary");
+        editBtn.style.padding = "0.25rem 0.6rem";
+        editBtn.style.fontSize = "0.75rem";
+        editBtn.addEventListener("click", () => {
+          fillFormForEdit(index);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.textContent = "Supprimer";
+        deleteBtn.classList.add("btn-danger");
+        deleteBtn.style.padding = "0.25rem 0.6rem";
+        deleteBtn.style.fontSize = "0.75rem";
+        deleteBtn.addEventListener("click", () => {
+          if (confirm("Supprimer cette entrée ?")) {
+            data.splice(index, 1);
+            saveData(data);
+            renderTable();
+          }
+        });
+
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(deleteBtn);
+
+        tdActions.appendChild(actionsDiv);
+        tr.appendChild(tdActions);
+
+        venuesTableBody.appendChild(tr);
+      });
+
+      countBadge.textContent =
+        data.length + " " + pluralize(data.length, "entrée", "entrées");
+    }
+
+    // -----------------------------
+    // Form handling
+    // -----------------------------
+    function resetForm() {
+      nomCourtEl.value = "";
+      lienEl.value = "";
+      nomCompletEl.value = "";
+      typeEl.value = "";
+      classementEl.value = "";
+      thematiqueEl.value = "";
+      surveyFriendlyEl.value = "";
+      deadlineEl.value = "";
+      datesEventEl.value = "";
+      villePaysEl.value = "";
+      articlesSimilairesEl.value = "";
+      commentairesEl.value = "";
+      editIndex = null;
+      saveBtn.textContent = "Enregistrer l’entrée";
+    }
+
+    function fillFormForEdit(index) {
+      const row = data[index];
+      nomCourtEl.value = row.nomCourt || "";
+      lienEl.value = row.lien || "";
+      nomCompletEl.value = row.nomComplet || "";
+      typeEl.value = row.type || "";
+      classementEl.value = row.classement || "";
+      thematiqueEl.value = row.thematique || "";
+      surveyFriendlyEl.value = row.surveyFriendly || "";
+      deadlineEl.value = row.deadline || "";
+      datesEventEl.value = row.datesEvent || "";
+      villePaysEl.value = row.villePays || "";
+      articlesSimilairesEl.value = row.articlesSimilaires || "";
+      commentairesEl.value = row.commentaires || "";
+
+      editIndex = index;
+      saveBtn.textContent = "Mettre à jour l’entrée";
+    }
+
+    function handleSave() {
+      const newRow = {
+        nomCourt: nomCourtEl.value.trim(),
+        lien: lienEl.value.trim(),
+        nomComplet: nomCompletEl.value.trim(),
+        type: typeEl.value,
+        classement: classementEl.value.trim(),
+        thematique: thematiqueEl.value.trim(),
+        surveyFriendly: surveyFriendlyEl.value,
+        deadline: deadlineEl.value.trim(),
+        datesEvent: datesEventEl.value.trim(),
+        villePays: villePaysEl.value.trim(),
+        articlesSimilaires: articlesSimilairesEl.value.trim(),
+        commentaires: commentairesEl.value.trim(),
+      };
+
+      if (!newRow.nomCourt && !newRow.nomComplet) {
+        alert("Merci de renseigner au moins le nom court ou le nom complet.");
+        return;
+      }
+
+      if (editIndex === null) {
+        data.push(newRow);
+      } else {
+        data[editIndex] = newRow;
+      }
+
+      saveData(data);
+      renderTable();
+      resetForm();
+    }
+
+    // -----------------------------
+    // Export / Clear
+    // -----------------------------
+    function handleExportJSON() {
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "venues_survey_provenance_ml.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function handleExportCSV() {
+      if (!data.length) {
+        alert("Aucune donnée à exporter.");
+        return;
+      }
+
+      const headers = [
+        "Nom court",
+        "Nom complet",
+        "Lien",
+        "Type",
+        "Classement",
+        "Thématique / Pertinence",
+        "Compatible Survey",
+        "Date limite",
+        "Dates",
+        "Ville / Pays",
+        "Articles similaires publiés",
+        "Commentaires / Notes"
+      ];
+
+      const rows = data.map(row => [
+        row.nomCourt || "",
+        row.nomComplet || "",
+        row.lien || "",
+        row.type || "",
+        row.classement || "",
+        row.thematique || "",
+        row.surveyFriendly || "",
+        row.deadline || "",
+        row.datesEvent || "",
+        row.villePays || "",
+        (row.articlesSimilaires || "").replace(/\r?\n/g, " "),
+        (row.commentaires || "").replace(/\r?\n/g, " ")
+      ]);
+
+      const all = [headers, ...rows];
+
+      const csvContent = all
+        .map(r =>
+          r
+            .map(field => {
+              const f = String(field).replace(/"/g, '""');
+              return `"${f}"`;
+            })
+            .join(",")
+        )
+        .join("\r\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "venues_survey_provenance_ml.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function handleClear() {
+      if (!confirm("Effacer toutes les données ? Cette action est irréversible.")) {
+        return;
+      }
+      data = [];
+      saveData(data);
+      renderTable();
+      resetForm();
+    }
+
+    // -----------------------------
+    // Event bindings
+    // -----------------------------
+    saveBtn.addEventListener("click", handleSave);
+    resetBtn.addEventListener("click", resetForm);
+    clearBtn.addEventListener("click", handleClear);
+    exportBtn.addEventListener("click", handleExportJSON);
+    exportCsvBtn.addEventListener("click", handleExportCSV);
+
+    // -----------------------------
+    // Initial render
+    // -----------------------------
+    renderTable();
+  </script>
+</body>
+</html>
